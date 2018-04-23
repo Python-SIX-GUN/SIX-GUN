@@ -1,0 +1,185 @@
+Index: App/ext.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- App/ext.py	(revision )
++++ App/ext.py	(revision )
+@@ -0,0 +1,12 @@
++from flask_session import Session
++from flask_sqlalchemy import SQLAlchemy
++
++from App.views import init_blue
++
++db = SQLAlchemy()
++
++
++def init_ext(app):
++    db.init_app(app=app)
++    Session(app=app)
++    init_blue(app=app)
+Index: App/models.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- App/models.py	(revision )
++++ App/models.py	(revision )
+@@ -0,0 +1,1 @@
++
+Index: App/__init__.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- App/__init__.py	(revision )
++++ App/__init__.py	(revision )
+@@ -0,0 +1,11 @@
++from flask import Flask
++from App import settings
++from App.ext import init_ext
++
++
++def create_app(env_name):
++    app = Flask(__name__)
++    app.config.from_object(settings.config.get(env_name) or 'default')
++    init_ext(app=app)
++
++    return app
+Index: App/static/html/home.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- App/static/html/home.html	(revision )
++++ App/static/html/home.html	(revision )
+@@ -0,0 +1,10 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <title>Title</title>
++</head>
++<body>
++
++</body>
++</html>
+\ No newline at end of file
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .gitignore	(revision 37163a4fb546f02af6409a7307665c975bc4ee86)
++++ .gitignore	(revision )
+@@ -1,3 +1,4 @@
++.idea
+ # Byte-compiled / optimized / DLL files
+ __pycache__/
+ *.py[cod]
+Index: App/settings.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- App/settings.py	(revision )
++++ App/settings.py	(revision )
+@@ -0,0 +1,80 @@
++def get_db_uri(dbinfo):
++    user = dbinfo.get('USER') or 'root'
++    password = dbinfo.get('PASSWORD') or '123456'
++    host = dbinfo.get('HOST') or '127.0.0.1'
++    port = dbinfo.get('PORT') or '3306'
++    name = dbinfo.get('NAME') or 'mysql'
++    db = dbinfo.get('DB') or 'mysql'
++    dirver = dbinfo.get('dirver') or 'pymysql'
++    return "{}+{}://{}:{}@{}:{}/{}".format(db, dirver, user, password, host, port, name)
++
++
++class Config():
++    DEBUG = False
++    TESTING = False
++    SQLALCHEMY_TRACK_MODICATIONS = False
++
++
++class DevelopConfig(Config):
++    DEBUG = True
++    DATABASE = {
++        'USEER': 'ROOT',
++        'PASSWORD': '123456',
++        'HOST': '127.0.0.1',
++        'PORT': '3306',
++        'NAME': 'HelloFlask',
++        'DB': 'mysql',
++        'dirver': 'pymysql'
++    }
++    SQLALCHEMY_DATABASE_URI = get_db_uri(DATABASE)
++
++
++class TestingConfig(Config):
++    TESTING = False
++    DATABASE = {
++        'USEER': 'ROOT',
++        'PASSWORD': '123456',
++        'HOST': '127.0.0.1',
++        'PORT': '3306',
++        'NAME': 'HelloFlask',
++        'DB': 'mysql',
++        'dirver': 'pymysql'
++    }
++    SQLALCHEMY_DATABASE_URI = get_db_uri(DATABASE)
++
++
++class StaggingConfig(Config):
++    DEBUG = True
++    DATABASE = {
++        'USEER': 'ROOT',
++        'PASSWORD': '123456',
++        'HOST': '127.0.0.1',
++        'PORT': '3306',
++        'NAME': 'HelloFlask',
++        'DB': 'mysql',
++        'dirver': 'pymysql'
++    }
++    SQLALCHEMY_DATABASE_URI = get_db_uri(DATABASE)
++
++
++class ProductConfig(Config):
++    DEBUG = True
++    DATABASE = {
++        'USEER': 'ROOT',
++        'PASSWORD': '123456',
++        'HOST': '127.0.0.1',
++        'PORT': '3306',
++        'NAME': 'HelloFlask',
++        'DB': 'mysql',
++        'dirver': 'pymysql'
++    }
++    SQLALCHEMY_DATABASE_URI = get_db_uri(DATABASE)
++
++
++config = {
++    'develop': DevelopConfig,
++    'testing': TestingConfig,
++    'stagging': StaggingConfig,
++    'product': ProductConfig,
++    'default': DevelopConfig
++}
+Index: manager.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- manager.py	(revision )
++++ manager.py	(revision )
+@@ -0,0 +1,10 @@
++from flask_script import Manager
++
++from App import create_app
++
++app = create_app('default')
++
++manager = Manager(app=app)
++
++if __name__ == '__main__':
++    manager.run()
