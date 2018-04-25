@@ -3,7 +3,7 @@ def get_db_uri(dbinfo):
     password = dbinfo.get('PASSWORD') or '123456'
     host = dbinfo.get('HOST') or '127.0.0.1'
     port = dbinfo.get('PORT') or '3306'
-    name = dbinfo.get('NAME') or 'mysql'
+    name = dbinfo.get('NAME') or 'AXFpython1801'
     db = dbinfo.get('DB') or 'mysql'
     dirver = dbinfo.get('dirver') or 'pymysql'
     return "{}+{}://{}:{}@{}:{}/{}".format(db, dirver, user, password, host, port, name)
@@ -18,11 +18,11 @@ class Config():
 class DevelopConfig(Config):
     DEBUG = True
     DATABASE = {
-        'USEER': 'ROOT',
+        'USEER': 'root',
         'PASSWORD': '123456',
         'HOST': '127.0.0.1',
         'PORT': '3306',
-        'NAME': 'HelloFlask',
+        'NAME': 'AXFpython1801',
         'DB': 'mysql',
         'dirver': 'pymysql'
     }
